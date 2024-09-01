@@ -30,13 +30,22 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 public class Order {
 
+    protected Order() {
+    }
+
+    public Order(List<OrderItem> orderItems, BigDecimal orderAmount) {
+        orderItems.forEach(this::addOrderItem);
+        this.orderAmount = orderAmount;
+        this.status = OrderStatus.PAYMENT_PENDING;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_id")
     private Long id;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<OrderItem> orderItems = new ArrayList<>();
+    private final List<OrderItem> orderItems = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -64,4 +73,9 @@ public class Order {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    public void addOrderItem(OrderItem orderItem) {
+        orderItems.add(orderItem);
+        orderItem.setOrder(this);
+    }
 }
