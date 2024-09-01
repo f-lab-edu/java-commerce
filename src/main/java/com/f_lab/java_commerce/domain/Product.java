@@ -1,5 +1,6 @@
 package com.f_lab.java_commerce.domain;
 
+import com.f_lab.java_commerce.exception.NotEnoughStockException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -55,5 +56,12 @@ public class Product {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now(ZoneOffset.UTC);
+    }
+
+    public void reduceStock(int quantity) {
+        if (stockQuantity < quantity) {
+            throw new NotEnoughStockException();
+        }
+        stockQuantity -= quantity;
     }
 }
