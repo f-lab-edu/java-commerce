@@ -24,6 +24,16 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public class OrderItem {
 
+    protected OrderItem() {
+    }
+
+    public OrderItem(Product product, BigDecimal orderPrice, int quantity) {
+        this.product = product;
+        this.orderPrice = orderPrice;
+        this.quantity = quantity;
+        product.reduceStock(quantity);
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_item_id")
@@ -46,4 +56,8 @@ public class OrderItem {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
 }
