@@ -1,5 +1,6 @@
 package com.f_lab.java_commerce.domain;
 
+import com.f_lab.java_commerce.dto.UpdateOrderDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -77,5 +78,16 @@ public class Order {
     public void addOrderItem(OrderItem orderItem) {
         orderItems.add(orderItem);
         orderItem.setOrder(this);
+    }
+
+    public void updateOrderBeforePayment(UpdateOrderDto dto) {
+        this.status = dto.status();
+        this.orderAmount = dto.orderAmount();
+        this.paymentMethod = dto.paymentMethod();
+        this.ordererName = dto.ordererName();
+        this.ordererPhoneNumber = dto.ordererPhoneNumber();
+        this.receiverName = dto.receiverName();
+        this.receiverPhoneNumber = dto.receiverPhoneNumber();
+        this.delivery = dto.delivery();
     }
 }

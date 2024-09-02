@@ -1,5 +1,6 @@
 package com.f_lab.java_commerce.domain;
 
+import com.f_lab.java_commerce.dto.UpdateOrderItemDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -59,5 +60,10 @@ public class OrderItem {
 
     public void setOrder(Order order) {
         this.order = order;
+    }
+
+    public void updateOrderItem(UpdateOrderItemDto dto) {
+        this.orderPrice = dto.orderPrice();
+        this.quantity = dto.quantity();
     }
 }
