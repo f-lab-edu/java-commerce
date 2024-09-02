@@ -25,25 +25,41 @@ public class OrderService {
 
     @Transactional
     public Long createOrder(CreateOrderDto dto) {
-        Set<Long> productIds = dto.orderItems().stream()
-            .map(CreateOrderItemDto::productId)
-            .collect(Collectors.toSet());
-        Map<Long, Product> productMap = productRepository.findAllById(productIds)
-            .stream()
-            .collect(Collectors.toMap(Product::getId, Function.identity()));
+        Set<Long> productIds = extractProductIds(dto);
+        Map<Long, Product> productMap = getProductMapByIds(productIds);
 
-        if (productIds.size() != productMap.size()) {
-            throw new IllegalArgumentException("Invalid product id");
-        }
+        validateProductIds(productIds, productMap);
 
-        List<OrderItem> orderItems = dto.orderItems().stream()
+        List<OrderItem> orderItems = createOrderItems(dto, productMap);
+
+        return orderRepository.save(new Order(orderItems, dto.orderAmount()));
+    }
+
+    private List<OrderItem> createOrderItems(CreateOrderDto dto, Map<Long, Product> productMap) {
+        return dto.orderItems().stream()
             .map(orderItemDto -> new OrderItem(
                 productMap.get(orderItemDto.productId()),
                 orderItemDto.orderPrice(),
                 orderItemDto.quantity()
             ))
             .toList();
+    }
 
-        return orderRepository.save(new Order(orderItems, dto.orderAmount()));
+    private void validateProductIds(Set<Long> productIds, Map<Long, Product> productMap) {
+        if (productIds.size() != productMap.size()) {
+            throw new IllegalArgumentException("Invalid product id");
+        }
+    }
+
+    private Map<Long, Product> getProductMapByIds(Set<Long> productIds) {
+        return productRepository.findAllById(productIds)
+            .stream()
+            .collect(Collectors.toMap(Product::getId, Function.identity()));
+    }
+
+    private Set<Long> extractProductIds(CreateOrderDto dto) {
+        return dto.orderItems().stream()
+            .map(CreateOrderItemDto::productId)
+            .collect(Collectors.toSet());
     }
 }
