@@ -23,6 +23,28 @@ import java.time.ZoneOffset;
 @Getter
 public class Product {
 
+    protected Product() {
+
+    }
+
+    public Product(
+        ProductStatus status,
+        String title,
+        String description,
+        BigDecimal retailPrice,
+        BigDecimal supplyPrice,
+        int stockQuantity,
+        ProductDiscount discount
+    ) {
+        this.status = status;
+        this.title = title;
+        this.description = description;
+        this.retailPrice = retailPrice;
+        this.supplyPrice = supplyPrice;
+        this.stockQuantity = stockQuantity;
+        this.discount = discount;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
