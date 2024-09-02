@@ -1,1 +1,4 @@
-rootProject.name = 'java-commerce'
+include(
+    "apps:java-commerce",
+    "apps:pg-mock"
+)
