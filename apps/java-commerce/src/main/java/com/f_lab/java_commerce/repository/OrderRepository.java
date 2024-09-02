@@ -16,4 +16,8 @@ public class OrderRepository {
 
         return order.getId();
     }
+
+    public Order findById(Long orderId) {
+        return em.find(Order.class, orderId);
+    }
 }

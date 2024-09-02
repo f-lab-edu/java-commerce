@@ -5,6 +5,8 @@ import com.f_lab.java_commerce.domain.OrderItem;
 import com.f_lab.java_commerce.domain.Product;
 import com.f_lab.java_commerce.dto.CreateOrderDto;
 import com.f_lab.java_commerce.dto.CreateOrderItemDto;
+import com.f_lab.java_commerce.dto.UpdateOrderDto;
+import com.f_lab.java_commerce.dto.UpdateOrderItemDto;
 import com.f_lab.java_commerce.repository.OrderRepository;
 import com.f_lab.java_commerce.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -33,6 +36,37 @@ public class OrderService {
         List<OrderItem> orderItems = createOrderItems(dto, productMap);
 
         return orderRepository.save(new Order(orderItems, dto.orderAmount()));
+    }
+
+    @Transactional
+    public Long updateOrder(UpdateOrderDto dto) {
+        Optional<Long> optionalOrderId = Optional.ofNullable(dto.orderId());
+        Long orderId = optionalOrderId.orElseThrow(() -> new IllegalArgumentException("Order ID cannot be null"));
+
+        Order order = orderRepository.findById(orderId);
+
+        if (order == null) {
+            throw new IllegalArgumentException("Invalid order id");
+        }
+
+        order.updateOrderBeforePayment(dto);
+        updateOrderItems(order, dto.orderItems());
+
+        return orderRepository.save(order);
+    }
+
+    private void updateOrderItems(Order order, List<UpdateOrderItemDto> orderItems) {
+        orderItems.forEach(orderItemDto -> {
+            Long orderItemId = Optional.ofNullable(orderItemDto.orderItemId())
+                .orElseThrow(() -> new IllegalArgumentException("Order item ID cannot be null"));
+
+            OrderItem orderItem = order.getOrderItems().stream()
+                .filter(item -> item.getId().equals(orderItemId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Invalid order item id"));
+
+            orderItem.updateOrderItem(orderItemDto);
+        });
     }
 
     private List<OrderItem> createOrderItems(CreateOrderDto dto, Map<Long, Product> productMap) {
