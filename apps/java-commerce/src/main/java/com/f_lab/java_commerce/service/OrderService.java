@@ -39,8 +39,8 @@ public class OrderService {
     }
 
     @Transactional
-    public Long updateOrder(UpdateOrderDto dto) {
-        Optional<Long> optionalOrderId = Optional.ofNullable(dto.orderId());
+    public Long updateOrderBeforePayment(Long inputOrderId, UpdateOrderDto dto) {
+        Optional<Long> optionalOrderId = Optional.ofNullable(inputOrderId);
         Long orderId = optionalOrderId.orElseThrow(() -> new IllegalArgumentException("Order ID cannot be null"));
 
         Order order = orderRepository.findById(orderId);
