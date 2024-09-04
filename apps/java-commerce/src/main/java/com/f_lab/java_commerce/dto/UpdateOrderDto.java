@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public record UpdateOrderDto(
-    Long orderId,
     List<UpdateOrderItemDto> orderItems,
     OrderStatus status,
     BigDecimal orderAmount,
