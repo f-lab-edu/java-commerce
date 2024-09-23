@@ -1,16 +1,14 @@
 package com.f_lab.java_commerce.exception;
 
-public class NotEnoughStockException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class NotEnoughStockException extends BaseException {
 
     public NotEnoughStockException() {
-        super("재고가 부족합니다.");
+        super(HttpStatus.BAD_REQUEST, "재고가 부족합니다.");
     }
 
     public NotEnoughStockException(String message) {
-        super(message);
-    }
-
-    public NotEnoughStockException(String message, Throwable cause) {
-        super(message, cause);
+        super(HttpStatus.BAD_REQUEST, message);
     }
 }
